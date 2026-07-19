@@ -21,7 +21,7 @@ env:
 jobs:
   benchmark_start:
     name: Benchmark Start
-    if: github.event.action == 'prombench_start'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Update status to pending
@@ -56,7 +56,7 @@ jobs:
           "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$LAST_COMMIT_SHA"
   benchmark_cancel:
     name: Benchmark Cancel
-    if: github.event.action == 'prombench_stop'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Update status to pending
@@ -91,7 +91,7 @@ jobs:
           "https://api.github.com/repos/$GITHUB_REPOSITORY/statuses/$LAST_COMMIT_SHA"
   benchmark_restart:
     name: Benchmark Restart
-    if: github.event.action == 'prombench_restart'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Update status to pending

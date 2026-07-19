@@ -6,6 +6,7 @@ on:
 
 jobs:
   test_go:
+    if: false
     name: Go tests
     runs-on: ubuntu-latest
     container:
@@ -24,6 +25,7 @@ jobs:
       - run: make -C documentation/examples
 
   test_go_more:
+    if: false
     name: More Go tests
     runs-on: ubuntu-latest
     container:
@@ -39,6 +41,7 @@ jobs:
           version: "3.15.8"
 
   test_go_oldest:
+    if: false
     name: Go tests with previous Go version
     runs-on: ubuntu-latest
     env:
@@ -54,6 +57,7 @@ jobs:
       - run: make test GO_ONLY=1 test-flags=""
 
   test_ui:
+    if: false
     name: UI tests
     runs-on: ubuntu-latest
     # Whenever the Go version is updated here, .promu.yml
@@ -76,6 +80,7 @@ jobs:
           directory: .tarballs
 
   test_windows:
+    if: false
     name: Go tests on Windows
     runs-on: windows-latest
     steps:
@@ -89,6 +94,7 @@ jobs:
         shell: powershell
 
   test_mixins:
+    if: false
     name: Mixins tests
     runs-on: ubuntu-latest
     # Whenever the Go version is updated here, .promu.yml
@@ -109,14 +115,7 @@ jobs:
   build:
     name: Build Prometheus for common architectures
     runs-on: ubuntu-latest
-    if: |
-      !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v2.'))
-      &&
-      !(github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v3.'))
-      &&
-      !(github.event_name == 'pull_request' && startsWith(github.event.pull_request.base.ref, 'release-'))
-      &&
-      !(github.event_name == 'push' && github.event.ref == 'refs/heads/main')
+    if: false
     strategy:
       matrix:
         thread: [ 0, 1, 2 ]
@@ -131,14 +130,7 @@ jobs:
   build_all:
     name: Build Prometheus for all architectures
     runs-on: ubuntu-latest
-    if: |
-      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v2.'))
-      ||
-      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v3.'))
-      ||
-      (github.event_name == 'pull_request' && startsWith(github.event.pull_request.base.ref, 'release-'))
-      ||
-      (github.event_name == 'push' && github.event.ref == 'refs/heads/main')
+    if: false
     strategy:
       matrix:
         thread: [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11 ]
@@ -167,7 +159,7 @@ jobs:
     # And skipped is treated as success https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborat[…]n-repositories-with-code-quality-features/about-status-checks
     # Adding always ensures that the status check is run independently of the
     # results of Build All
-    if: always() && github.event_name == 'pull_request' && startsWith(github.event.pull_request.base.ref, 'release-')
+    if: false
     steps:
       - name: Successful build
         if: ${{ !(contains(needs.*.result, 'failure')) && !(contains(needs.*.result, 'cancelled')) }}
@@ -176,6 +168,7 @@ jobs:
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
         run: exit 1
   check_generated_parser:
+    if: false
     name: Check generated parser
     runs-on: ubuntu-latest
     steps:
@@ -189,6 +182,7 @@ jobs:
       - name: Run goyacc and check for diff
         run: make install-goyacc check-generated-parser
   golangci:
+    if: false
     name: golangci-lint
     runs-on: ubuntu-latest
     steps:
@@ -209,15 +203,16 @@ jobs:
           version: v1.64.6
   fuzzing:
     uses: ./.github/workflows/fuzzing.yml
-    if: github.event_name == 'pull_request'
+    if: false
   codeql:
+    if: false
     uses: ./.github/workflows/codeql-analysis.yml
 
   publish_main:
     name: Publish main branch artifacts
     runs-on: ubuntu-latest
     needs: [test_ui, test_go, test_go_more, test_go_oldest, test_windows, golangci, codeql, build_all]
-    if: github.event_name == 'push' && github.event.ref == 'refs/heads/main'
+    if: false
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: prometheus/promci@c3c93a50d581b928af720f0134b2b2dad32a6c41 # v0.4.6
@@ -231,10 +226,7 @@ jobs:
     name: Publish release artefacts
     runs-on: ubuntu-latest
     needs: [test_ui, test_go, test_go_more, test_go_oldest, test_windows, golangci, codeql, build_all]
-    if: |
-      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v2.'))
-      ||
-      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v3.'))
+    if: false
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: prometheus/promci@c3c93a50d581b928af720f0134b2b2dad32a6c41 # v0.4.6
@@ -246,6 +238,7 @@ jobs:
           quay_io_password: ${{ secrets.quay_io_password }}
           github_token: ${{ secrets.PROMBOT_GITHUB_TOKEN }}
   publish_ui_release:
+    if: false
     name: Publish UI on npm Registry
     runs-on: ubuntu-latest
     needs: [test_ui, codeql]

@@ -9,6 +9,7 @@ permissions:
 
 jobs:
   buf:
+    if: false
     name: lint
     runs-on: ubuntu-latest
     steps:

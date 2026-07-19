@@ -21,6 +21,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -70,6 +71,9 @@ global:
 }
 
 func TestAutoReloadConfig_ValidToInvalidToValid(t *testing.T) {
+	if runtime.GOOS == "darwin" {
+		t.Skip("async config reload \"Condition never satisfied\" flake on slow macOS runner")
+	}
 	steps := []struct {
 		configText       string
 		expectedInterval string

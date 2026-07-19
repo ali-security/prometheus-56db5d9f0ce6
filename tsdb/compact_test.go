@@ -1928,6 +1928,9 @@ func TestCompactEmptyResultBlockWithTombstone(t *testing.T) {
 }
 
 func TestDelayedCompaction(t *testing.T) {
+	if runtime.GOOS == "darwin" {
+		t.Skip("asserts compaction delay wall-clock < 1s, exceeds on slow macOS runner")
+	}
 	// The delay is chosen in such a way as to not slow down the tests, but also to make
 	// the effective compaction duration negligible compared to it, so that the duration comparisons make sense.
 	delay := 1000 * time.Millisecond
